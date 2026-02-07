@@ -12,8 +12,89 @@ import {
   X,
   ChevronRight,
   Info,
-  BookOpen
+  Lock,
+  ArrowRight,
+  KeyRound
 } from 'lucide-react';
+
+// --- CONFIGURATION ---
+// ⬇️ CHANGE THIS to the password you want to sell to customers
+const ACCESS_CODE = "CARE2024"; 
+
+// --- Login Component ---
+const LoginScreen = ({ onLogin }) => {
+  const [input, setInput] = useState('');
+  const [error, setError] = useState(false);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // specific check (case insensitive)
+    if (input.trim().toUpperCase() === ACCESS_CODE) {
+      onLogin();
+    } else {
+      setError(true);
+      setTimeout(() => setError(false), 2000);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-stone-50 flex flex-col items-center justify-center p-4">
+      <div className="max-w-md w-full bg-white rounded-2xl shadow-xl border border-stone-200 overflow-hidden">
+        <div className="bg-teal-600 p-8 text-center">
+          <div className="inline-flex p-3 bg-white/20 rounded-full text-white mb-4">
+            <Lock size={32} />
+          </div>
+          <h1 className="text-2xl font-serif font-bold text-white">Caregiver Confidence</h1>
+          <p className="text-teal-100 text-sm mt-1">Premium Digital Guide</p>
+        </div>
+        
+        <div className="p-8">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div>
+              <label className="block text-sm font-medium text-stone-700 mb-2">
+                Enter Access Code
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-stone-400">
+                  <KeyRound size={20} />
+                </div>
+                <input
+                  type="text"
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  className={`block w-full pl-10 pr-3 py-3 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-colors ${
+                    error ? 'border-rose-300 bg-rose-50' : 'border-stone-300'
+                  }`}
+                  placeholder="e.g. CARE2024"
+                />
+              </div>
+              {error && (
+                <p className="mt-2 text-sm text-rose-600 flex items-center gap-1 animate-pulse">
+                  <AlertCircle size={14} />
+                  Incorrect access code. Please try again.
+                </p>
+              )}
+            </div>
+
+            <button
+              type="submit"
+              className="w-full flex items-center justify-center gap-2 bg-stone-800 hover:bg-stone-700 text-white font-medium py-3 px-4 rounded-lg transition-colors group"
+            >
+              Unlock Guide
+              <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+            </button>
+          </form>
+          
+          <div className="mt-6 text-center">
+            <p className="text-xs text-stone-400">
+              Don't have a code? <a href="#" className="underline hover:text-teal-600">Purchase access here</a>.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 // --- Components ---
 
@@ -236,6 +317,25 @@ const MedicalSupport = () => (
 // --- Main App Component ---
 
 const App = () => {
+  // Authentication State
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isClient, setIsClient] = useState(false);
+
+  // Check for previous login session
+  useEffect(() => {
+    setIsClient(true);
+    const storedAuth = localStorage.getItem('caregiver_auth');
+    if (storedAuth === 'true') {
+      setIsAuthenticated(true);
+    }
+  }, []);
+
+  const handleLogin = () => {
+    setIsAuthenticated(true);
+    localStorage.setItem('caregiver_auth', 'true');
+  };
+
+  // Main App Logic
   const [activeTab, setActiveTab] = useState('pressure');
   const [showAllForPrint, setShowAllForPrint] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -247,19 +347,21 @@ const App = () => {
     { id: 'medical', label: 'Medical Signs', icon: Shield, component: MedicalSupport },
   ];
 
-  // Effect to handle printing flow
+  // Print Handling
   useEffect(() => {
     if (showAllForPrint) {
-      // Small delay to ensure render catches up before print dialog
       setTimeout(() => {
         window.print();
-        // Reset after print dialog closes (users might cancel, so we wait)
-        // Note: browser behavior varies on when 'print' blocks execution. 
-        // We leave it active so they can see the full view, they can click "Back" to exit.
       }, 100);
     }
   }, [showAllForPrint]);
 
+  // If not logged in, show Login Screen
+  if (isClient && !isAuthenticated) {
+    return <LoginScreen onLogin={handleLogin} />;
+  }
+
+  // Otherwise, show the full app
   return (
     <div className="min-h-screen bg-stone-50 font-sans text-stone-800 selection:bg-teal-100">
       
