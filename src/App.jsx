@@ -14,6 +14,7 @@ import {
   Info,
   BookOpen
 } from 'lucide-react';
+import { Analytics } from '@vercel/analytics/react';
 
 // --- Components ---
 
@@ -472,6 +473,7 @@ const App = () => {
           .break-inside-avoid { break-inside: avoid; }
         }
       `}</style>
+      <Analytics />
     </div>
   );
 };
