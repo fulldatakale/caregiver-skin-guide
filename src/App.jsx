@@ -19,7 +19,7 @@ import {
 
 // --- CONFIGURATION ---
 // ⬇️ CHANGE THIS to the password you want to sell to customers
-const ACCESS_CODE = "CARE2024"; 
+const ACCESS_CODE = "CARE4U"; 
 
 // --- Login Component ---
 const LoginScreen = ({ onLogin }) => {
