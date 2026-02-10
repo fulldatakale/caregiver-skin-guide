@@ -16,6 +16,7 @@ import {
   ArrowRight,
   KeyRound
 } from 'lucide-react';
+import { Analytics } from '@vercel/analytics/react';
 
 // --- CONFIGURATION ---
 // ⬇️ CHANGE THIS to the password you want to sell to customers
@@ -574,6 +575,7 @@ const App = () => {
           .break-inside-avoid { break-inside: avoid; }
         }
       `}</style>
+      <Analytics />
     </div>
   );
 };
